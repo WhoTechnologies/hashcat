@@ -1,0 +1,27 @@
+diff --git a/src/modules/module_34000.c b/src/modules/module_34000.c
+index cf14d30b3..2a94846be 100644
+--- a/src/modules/module_34000.c
++++ b/src/modules/module_34000.c
+@@ -110,14 +110,20 @@ int module_hash_decode (MAYBE_UNUSED const hashconfig_t *hashconfig, MAYBE_UNUSE
+   token.attr[2]    = TOKEN_ATTR_VERIFY_LENGTH;
+ 
+   // iterations
++  // Upstream caps len_max at 5 ("t=NNN") which rejects t >= 1000, even though
++  // argon2_options->iterations is u32. Widened to 12 ("t=NNNNNNNNNN") to match
++  // the memory field and cover the full u32 range, for high-iteration benchmark
++  // sweeps. Argon2 spec itself imposes no such low cap.
+   token.len_min[3] = 3;
+-  token.len_max[3] = 5;
++  token.len_max[3] = 12;
+   token.sep[3]     = ',';
+   token.attr[3]    = TOKEN_ATTR_VERIFY_LENGTH;
+ 
+   // parallelism
++  // Widened from upstream's len_max=5 to 12 for symmetry with iterations/memory;
++  // argon2_options->parallelism is u32 internally.
+   token.len_min[4] = 3;
+-  token.len_max[4] = 5;
++  token.len_max[4] = 12;
+   token.sep[4]     = '$';
+   token.attr[4]    = TOKEN_ATTR_VERIFY_LENGTH;
+ 
