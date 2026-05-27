@@ -3900,7 +3900,15 @@ void status_speed_machine_readable (hashcat_ctx_t *hashcat_ctx)
 
   if (bridge_ctx->enabled == true)
   {
-    event_log_info (hashcat_ctx, "%d:%" PRIu64, 0, (u64) (hashcat_status->hashes_msec_all * 1000));
+    // Emit a third colon-separated field: integer nanoseconds per hash, derived
+    // from the full-precision double rather than from the truncated H/s integer.
+    // The H/s field truncates sub-1-H/s rates to 0; this preserves precision for
+    // slow argon2 params where one hash can take seconds-to-minutes. u64 holds
+    // ~584 years of ns, so any realistic per-hash time fits.
+    const double hps_d  = hashcat_status->hashes_msec_all * 1000.0;
+    const u64    nsec_h = (hps_d > 0.0) ? (u64) (1e9 / hps_d) : 0;
+    event_log_info (hashcat_ctx, "%d:%" PRIu64 ":%" PRIu64,
+                    0, (u64) hps_d, nsec_h);
   }
   else
   {
@@ -3911,7 +3919,11 @@ void status_speed_machine_readable (hashcat_ctx_t *hashcat_ctx)
       if (device_info->skipped_dev == true) continue;
       if (device_info->skipped_warning_dev == true) continue;
 
-      event_log_info (hashcat_ctx, "%d:%" PRIu64, device_id + 1, (u64) (device_info->hashes_msec_dev_benchmark * 1000));
+      // See note above on the bridge_ctx branch: third field is ns/hash.
+      const double hps_d  = device_info->hashes_msec_dev_benchmark * 1000.0;
+      const u64    nsec_h = (hps_d > 0.0) ? (u64) (1e9 / hps_d) : 0;
+      event_log_info (hashcat_ctx, "%d:%" PRIu64 ":%" PRIu64,
+                      device_id + 1, (u64) hps_d, nsec_h);
     }
   }
 
