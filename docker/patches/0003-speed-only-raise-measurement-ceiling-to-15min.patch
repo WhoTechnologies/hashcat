@@ -1,0 +1,40 @@
+diff --git a/src/backend.c b/src/backend.c
+index 242c45a..d5f7618 100644
+--- a/src/backend.c
++++ b/src/backend.c
+@@ -1560,7 +1560,7 @@ int choose_kernel (hashcat_ctx_t *hashcat_ctx, hc_device_param_t *device_param,
+ 
+             if (user_options->speed_only == true)
+             {
+-              if (speed_msec > 4000)
++              if (speed_msec > 900000)
+               {
+                 device_param->outerloop_multi *= 1 / iter_part;
+ 
+@@ -1651,7 +1651,7 @@ int choose_kernel (hashcat_ctx_t *hashcat_ctx, hc_device_param_t *device_param,
+ 
+             if (user_options->speed_only == true)
+             {
+-              if (speed_msec > 4000)
++              if (speed_msec > 900000)
+               {
+                 device_param->speed_pos = 1;
+ 
+@@ -4754,7 +4754,7 @@ int run_cracker (hashcat_ctx_t *hashcat_ctx, hc_device_param_t *device_param, co
+ 
+         if (user_options->slow_candidates == true)
+         {
+-          if ((total_msec > 4000) || (device_param->speed_pos == SPEED_CACHE - 1))
++          if ((total_msec > 900000) || (device_param->speed_pos == SPEED_CACHE - 1))
+           {
+             const u32 speed_pos = device_param->speed_pos;
+ 
+@@ -4775,7 +4775,7 @@ int run_cracker (hashcat_ctx_t *hashcat_ctx, hc_device_param_t *device_param, co
+         {
+           // it's unclear if 4s is enough to turn on boost mode for all backend device
+ 
+-          if ((total_msec > 4000) || (device_param->speed_pos == SPEED_CACHE - 1))
++          if ((total_msec > 900000) || (device_param->speed_pos == SPEED_CACHE - 1))
+           {
+             device_param->speed_only_finish = true;
+ 
